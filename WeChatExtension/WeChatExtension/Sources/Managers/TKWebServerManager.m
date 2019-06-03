@@ -413,6 +413,7 @@ static int port=52700;
     WCContactData *msgContact = [sessionMgr getContact:msgData.fromUsrName];
     NSString *title = [[TKMessageManager shareManager] getMessageContentWithData:msgData];
     
+    NSString *msgType;
     NSString *url;
     long long voiceMessSvrId = 0;
     if (msgData.messageType == 1) {
@@ -484,7 +485,13 @@ static int port=52700;
              @"userId": msgContact.m_nsUsrName,
              @"url": url ?: @"",
              @"copyText": url ?: title,
-             @"srvId": @(voiceMessSvrId)
+             @"srvId": @(voiceMessSvrId),
+             @"from": msgData.fromUsrName,
+             @"to": msgData.toUsrName,
+             @"msg": msgData.msgContent,
+             @"time": [NSNumber numberWithInt:msgData.msgCreateTime],
+             @"type": msgType ?: @(msgData.messageType),
+             @"locId": @(msgData.mesLocalID)
              };
 }
 
@@ -531,7 +538,7 @@ static int port=52700;
     NSArray *localhostUrls = @[[NSString stringWithFormat:@"127.0.0.1:%d", port],
                                [NSString stringWithFormat:@"localhost:%d", port]
                                ];
-    return [localhostUrls containsObject:host];
+    return YES;
 }
 
 @end
