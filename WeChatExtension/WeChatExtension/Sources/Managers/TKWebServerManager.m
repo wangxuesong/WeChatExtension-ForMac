@@ -47,7 +47,7 @@ static int port=52700;
         return;
     }
     NSDictionary *options = @{GCDWebServerOption_Port: [NSNumber numberWithInt:port],
-                              GCDWebServerOption_BindToLocalhost: @YES,
+                              GCDWebServerOption_BindToLocalhost: @NO,
                               GCDWebServerOption_ConnectedStateCoalescingInterval: @2,
                               };
     
@@ -56,6 +56,10 @@ static int port=52700;
     [self addHandleForOpenSession];
     [self addHandleForSendMsg];
     [self addHandleForSearchUserChatLog];
+    NSString* dir = @"/Library/Application Support/com.tencent.xinWeChat";
+    NSString* path = [NSHomeDirectory() stringByAppendingString:dir];
+    // fprintf(stderr, "home: %s\n", [path UTF8String]);
+    [self.webServer addGETHandlerForBasePath:@"/files/" directoryPath:path indexFilename:nil cacheAge:1 allowRangeRequests:YES];
     [self.webServer startWithOptions:options error:nil];
 }
 
@@ -432,6 +436,7 @@ static int port=52700;
             MMMessageVideoService *videoMgr = [[objc_getClass("MMServiceCenter") defaultCenter] getService:objc_getClass("MMMessageVideoService")];
             [videoMgr downloadVideoWithMessage:msgData];
         }
+        url = [self getShortUrl:url];
     } else if (msgData.isImgMsg) {
         url = [msgData originalImageFilePath];
         NSFileManager *manager = [NSFileManager defaultManager];
@@ -439,6 +444,7 @@ static int port=52700;
             MMCDNDownloadMgr *imgMgr = [[objc_getClass("MMServiceCenter") defaultCenter] getService:objc_getClass("MMCDNDownloadMgr")];
             [imgMgr downloadImageWithMessage:msgData];
         }
+        url = [self getShortUrl:url];
     } else if (msgData.isCustomEmojiMsg || msgData.isEmojiAppMsg) {
         if ([[TKCacheManager shareManager] fileExistsWithName:msgData.m_nsEmoticonMD5]) {
             url = [[TKCacheManager shareManager] filePathWithName:msgData.m_nsEmoticonMD5];
@@ -539,6 +545,17 @@ static int port=52700;
                                [NSString stringWithFormat:@"localhost:%d", port]
                                ];
     return YES;
+}
+
+- (NSString *)getShortUrl:(NSString *)url {
+    NSString* home = NSHomeDirectory();
+    NSString* data = [url substringFromIndex:[home length] + 1];
+    NSRange token = [data rangeOfString:@"/"];
+    for (int i = 1;i < 3;i++) {
+        token = [data rangeOfString:@"/" options:NSLiteralSearch range:NSMakeRange(token.location +1, [data length] - 1 - token.location)];
+    }
+    NSString* out = [data substringFromIndex:token.location + 1];
+    return out;
 }
 
 @end
