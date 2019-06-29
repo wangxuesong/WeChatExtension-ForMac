@@ -14,6 +14,6 @@
 static void __attribute__((constructor)) initialize(void) {
     NSLog(@"++++++++ WeChatPlugin loaded ++++++++");
     [NSObject hookWeChat];
-    [NSObject hookMMChatsTableCellView];
-    [NSObject hookMMStickerMessageCellView];
+//    [NSObject hookMMChatsTableCellView];
+//    [NSObject hookMMStickerMessageCellView];
 }

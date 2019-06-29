@@ -467,7 +467,7 @@
         LargerOrEqualVersion(@"2.3.24") ? tk_hookMethod(objc_getClass("MMUpdateMgr"), @selector(checkForUpdatesInBackground), [self class], @selector(hook_checkForUpdatesInBackground)) : tk_hookMethod(objc_getClass("WeChat"), @selector(checkForUpdatesInBackground), [self class], @selector(hook_checkForUpdatesInBackground));
     }
     
-    [[TKAssistantMenuManager shareManager] initAssistantMenuItems];
+//    [[TKAssistantMenuManager shareManager] initAssistantMenuItems];
     [self hook_applicationDidFinishLaunching:arg1];
 }
 
