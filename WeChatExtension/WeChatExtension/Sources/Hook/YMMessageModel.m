@@ -1,12 +1,12 @@
 //
-//  OPMessageModel.m
-//  WeChatPlugin
+//  YMMessageModel.m
+//  WeChatExtension
 //
 //  Created by MustangYM on 2019/1/23.
-//  Copyright © 2019 YY Inc. All rights reserved.
+//  Copyright © 2019 MustangYM. All rights reserved.
 //
 
-#import "OPMessageModel.h"
+#import "YMMessageModel.h"
 #import "WeChatPlugin.h"
 #import "NSDictionary+Safe.h"
 

@@ -1,15 +1,15 @@
 //
 //  MMChatsTableCellView+hook.m
-//  WeChatPlugin
+//  WeChatExtension
 //
-//  Created by TK on 2017/9/15.
-//  Copyright © 2017年 tk. All rights reserved.
+//  Created by WeChatExtension on 2017/9/15.
+//  Copyright © 2017年 WeChatExtension. All rights reserved.
 //
 
 #import "MMChatsTableCellView+hook.h"
 #import "WeChatPlugin.h"
 #import "TKIgnoreSessonModel.h"
-#import "TKMessageManager.h"
+#import "YMMessageManager.h"
 
 @implementation NSObject (MMChatsTableCellViewHook)
 
@@ -173,7 +173,7 @@
 
     [arrSession enumerateObjectsUsingBlock:^(MMSessionInfo *obj, NSUInteger idx, BOOL * _Nonnull stop) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [[TKMessageManager shareManager] clearUnRead:obj.m_nsUserName];
+            [[YMMessageManager shareManager] clearUnRead:obj.m_nsUserName];
         });
     }];
 }
