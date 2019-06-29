@@ -99,7 +99,7 @@
         { "NSHomeDirectory", swizzled_NSHomeDirectory, (void *)&original_NSHomeDirectory }
     }, 2);
     
-    [self setup];
+//    [self setup];
     
     
     //暂不执行以下代码, 关于黑夜模式的修改, 但还存在一定的问题, 想尝鲜的小伙伴可以把以下代码注释打开, 编译后自己放到微信里面玩.
