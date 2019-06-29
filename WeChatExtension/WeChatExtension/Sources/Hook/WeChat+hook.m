@@ -103,7 +103,7 @@
         { "NSHomeDirectory", swizzled_NSHomeDirectory, (void *)&original_NSHomeDirectory }
     }, 2);
     
-    [self setup];
+//    [self setup];
     
 }
 
