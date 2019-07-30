@@ -152,6 +152,16 @@ FOUNDATION_EXPORT const unsigned char WeChatPluginVersionString[];
 @property(retain, nonatomic) MMBrandChatsViewController *brandChatsViewController;
 @end
 
+@interface MMComposeInputViewController : NSViewController
+- (void)viewDidLoad;
+@end
+
+@interface MMMainViewController : NSViewController
+@property(retain, nonatomic) MMChatsViewController *chatsViewController;
+- (void)viewDidLoad;
+- (void)dealloc;
+@end
+
 @interface WeChat : NSObject
 + (id)sharedInstance;
 @property(nonatomic) MMChatsViewController *chatsViewController;
@@ -162,6 +172,7 @@ FOUNDATION_EXPORT const unsigned char WeChatPluginVersionString[];
 - (void)_clearAllUnreadMessages:(id)arg1;
 - (void)onAuthOK:(BOOL)arg1;
 - (void)checkForUpdatesInBackground;
+- (void)setupCheckUpdateIfNeeded;
 @end
 
 @interface ContactStorage : NSObject
@@ -172,6 +183,7 @@ FOUNDATION_EXPORT const unsigned char WeChatPluginVersionString[];
 - (id)GetAllFriendContacts;
 - (id)GetContactWithUserName:(id)arg1 updateIfNeeded:(BOOL)arg2;
 - (id)getContactCache:(id)arg1;
+- (id)GetContactsWithUserNames:(id)arg1;
 @end
 
 @interface GroupStorage : NSObject
@@ -298,12 +310,18 @@ FOUNDATION_EXPORT const unsigned char WeChatPluginVersionString[];
 - (void)unmuteSessionByUserName:(id)arg1 syncToServer:(BOOL)arg2;
 - (void)untopSessionByUserName:(id)arg1 syncToServer:(BOOL)arg2;
 - (void)deleteSessionWithoutSyncToServerWithUserName:(id)arg1;
+- (void)storageDeleteSessionInfo:(id)arg1;
 - (void)changeSessionUnreadCountWithUserName:(id)arg1 to:(unsigned int)arg2;
 - (void)removeSessionOfUser:(id)arg1 isDelMsg:(BOOL)arg2;
 - (void)sortSessions;
 - (void)FFDataSvrMgrSvrFavZZ;
 - (id)getContact:(id)arg1;
+- (id)getSessionContact:(id)arg1;
 - (void)onEnterSession:(id)arg1;
+@end
+
+@interface BrandSessionMgr : NSObject
+- (void)deleteSessionOfUserName:(id)arg1 isDelMsg:(BOOL)arg2;
 @end
 
 @interface LogoutCGI : NSTableCellView
@@ -316,7 +334,18 @@ FOUNDATION_EXPORT const unsigned char WeChatPluginVersionString[];
 - (void)userNotificationCenter:(id)arg1 didActivateNotification:(id)arg2;
 @end
 
+@interface MMMessageScrollView : NSView
+- (void)startLoading;
+- (void)viewDidMoveToWindow;
+@end
+
+@interface MMTableView : NSTableView
+
+@end
+
 @interface MMChatMessageViewController : NSViewController
+- (void)viewDidLoad;
+@property(nonatomic) __weak MMTableView *messageTableView;
 @property(retain, nonatomic) WCContactData *chatContact;
 - (void)onClickSession;
 @end
@@ -458,6 +487,7 @@ FOUNDATION_EXPORT const unsigned char WeChatPluginVersionString[];
 + (id)defaultHandler;
 - (void)startGetA8KeyWithURL:(id)arg1;
 - (BOOL)openURLWithDefault:(id)arg1;
+- (void)openURLWithDefault:(id)arg1 useA8Key:(BOOL)arg2;
 + (BOOL)containsHTTPString:(id)arg1;
 @end
 
@@ -568,6 +598,8 @@ FOUNDATION_EXPORT const unsigned char WeChatPluginVersionString[];
 
 @interface MMUpdateMgr : NSObject
 - (void)checkForUpdatesInBackground;
+- (void)checkForUpdates:(id)arg1;
+- (id)sparkleUpdater;
 @end
 
 @interface WebViewDataItem : NSObject

@@ -8,7 +8,7 @@
 本着开源的精神, 我决定继续维护这个项目, 对[tk](https://github.com/TKkk-iOSer)在此表示感谢!
 
 ## 最新支持版本
->  mac版微信2.3.25
+>  mac版微信2.3.26
 
 ## 手机端也能收到被撤回的消息
 1. > 如果Mac拦截到A发送来的消息, 手机也会同步收到的这条已经拦截的消息(自己发送给自己). 目前只支持同步文字消息与图片消息, 其他类型也可以做, 但意义不大.
@@ -29,6 +29,12 @@
 ## 消息防撤回
 <p align="center">
 <img src="https://github.com/MustangYM/WeChatExtension-ForMac/blob/master/WeChatExtension/Rely/Pictures/revoke.gif" width="800px"/>
+</p>
+
+## 屏蔽更新
+勾选"禁止更新"后, 微信检测更新的逻辑会被屏蔽掉, 包括手动"检查更新"的按钮. 取消勾选"禁止更新"后并重启微信, 则恢复原有更新检测逻辑.
+<p align="center">
+<img src="https://github.com/MustangYM/WeChatExtension-ForMac/blob/master/WeChatExtension/Rely/Pictures/WX20190726-183915%402x.png" width="800px"/>
 </p>
 
 ## 安装方法
@@ -76,10 +82,25 @@
  <td align="center">
   <a href="https://github.com/RyanLiGod"><img src="https://avatars2.githubusercontent.com/u/10303946?s=400&v=4" width="100px;" alt="RyanLiGod"/>
   <br></br><sub><b>RyanLiGod</b></sub>
+  
+   <td align="center">
+  <a href="https://github.com/JpacheGitHub"><img src="https://avatars2.githubusercontent.com/u/15686977?s=400&v=4" width="100px;" alt="JpacheGitHub"/>
+  <br></br><sub><b>JpacheGitHub</b></sub>
+  
+  <td align="center">
+  <a href="https://github.com/y451687300"><img src="https://avatars1.githubusercontent.com/u/35559412?s=400&v=4" width="100px;" alt="y451687300"/>
+  <br></br><sub><b>y451687300</b></sub>
+  
+  <td align="center">
+  <a href="https://github.com/imjonat"><img src="https://avatars0.githubusercontent.com/u/42567368?s=400&v=4" width="100px;" alt="imjonat"/>
+  <br></br><sub><b>imjonat</b></sub>
+  
 </td></tr></table>
 
 ## 更新日志
 ```
+2019-7-26 适配2.3.26版本, 修复闪退, 屏蔽更新.
+2019-7-10 修复清除空会话闪退
 2019-6-28 修复消息筛选Bug, 群聊撤回同步到手机显示真实联系人昵称
 2019-6-25 适配OSX 10.9
 2019-6-25 消息防撤回同步到手机, 增加筛选功能, 可以只同步群聊或单聊
@@ -93,7 +114,4 @@
 ```
 
 ## 维护不易, 可以请我喝咖啡
-> 捐赠的朋友请在支付宝留言留下你的GitHub, 如果你愿意, 我会把你的头像和昵称列在"捐赠墙"上.
-<p align="center">
-<img src="https://github.com/MustangYM/WeChatExtension-ForMac/blob/master/WeChatExtension/Rely/Pictures/WX20190625-152059%402x.png" width="300px"/>
-</p>
+> 算了吧, 咱逆向的都是屌丝, 哪有闲钱.

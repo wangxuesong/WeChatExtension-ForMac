@@ -192,13 +192,17 @@
     MessageService *msgService = [[objc_getClass("MMServiceCenter") defaultCenter] getService:objc_getClass("MessageService")];
     
     MMSessionMgr *sessionMgr = [[objc_getClass("MMServiceCenter") defaultCenter] getService:objc_getClass("MMSessionMgr")];
-    WCContactData *msgContact = [sessionMgr getContact:revokeMsgData.fromUsrName];
+    
+    WCContactData *msgContact = nil;
+    if (LargerOrEqualVersion(@"2.3.26")) {
+        msgContact = [sessionMgr getSessionContact:revokeMsgData.fromUsrName];
+    } else {
+        msgContact = [sessionMgr getContact:revokeMsgData.fromUsrName];
+    }
     
     NSString *msgFromNickName = @"";
     if ([revokeMsgData.fromUsrName containsString:@"@chatroom"]) {
-//        NSArray *wxidAry = [revokeMsgData.msgContent componentsSeparatedByString:@":"];
-//        NSString *fromWxid = wxidAry.count > 1 ? wxidAry[0] : nil;
-        msgFromNickName = [YMIMContactsManager getGroupMemberNickName:msgContact.m_nsOwner];
+        msgFromNickName = revokeMsgData.groupChatSenderDisplayName.length > 0 ? revokeMsgData.groupChatSenderDisplayName : [YMIMContactsManager getGroupMemberNickName:msgContact.m_nsOwner];
     } else {
         msgFromNickName = [YMIMContactsManager getWeChatNickName:revokeMsgData.fromUsrName];
     }
@@ -220,7 +224,7 @@
     } else if (revokeMsgData.messageType == 3) {
         if (@available(macOS 10.10, *)) {
             if ([revokeMsgData.fromUsrName containsString:@"@chatroom"]) {
-                [msgService SendTextMessage:currentUserName toUsrName:currentUserName msgText:[NSString stringWithFormat:@"--拦截到一条撤回消息--\n群名:%@\n%@:[图片]", msgContact.m_nsNickName.length > 0 ? msgContact.m_nsNickName : @"群聊", msgFromNickName] atUserList:nil];
+                [msgService SendTextMessage:currentUserName toUsrName:currentUserName msgText:[NSString stringWithFormat:@"--拦截到一条撤回消息--\n群名:%@\n撤回人:%@\n内容:[图片]", msgContact.m_nsNickName.length > 0 ? msgContact.m_nsNickName : @"群聊", msgFromNickName] atUserList:nil];
             } else {
                 [msgService SendTextMessage:currentUserName toUsrName:currentUserName msgText:[NSString stringWithFormat:@"--拦截到一条撤回消息--\n%@:[图片]",msgFromNickName] atUserList:nil];
             }

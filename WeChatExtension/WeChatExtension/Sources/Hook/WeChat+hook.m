@@ -20,6 +20,7 @@
 #import "YMMessageTool.h"
 #import "YMMessageModel.h"
 #import "YMUpdateManager.h"
+#import "YMThemeMgr.h"
 #import "ANYMethodLog.h"
 
 @implementation NSObject (WeChatHook)
@@ -66,7 +67,11 @@
     tk_hookMethod(objc_getClass("MMMainViewController"), @selector(viewDidLoad), [self class], @selector(hook_mainViewControllerDidLoad));
 
     //      自带浏览器打开链接
-    LargerOrEqualVersion(@"2.3.22") ? tk_hookClassMethod(objc_getClass("MMWebViewHelper"), @selector(handleWebViewDataItem:windowId:), [self class], @selector(hook_handleWebViewDataItem:windowId:)) :  tk_hookClassMethod(objc_getClass("MMWebViewHelper"), @selector(preHandleWebUrlStr:withMessage:), [self class], @selector(hook_preHandleWebUrlStr:withMessage:));
+    if (LargerOrEqualVersion(@"2.3.22")) {
+        tk_hookClassMethod(objc_getClass("MMWebViewHelper"), @selector(handleWebViewDataItem:windowId:), [self class], @selector(hook_handleWebViewDataItem:windowId:));
+    } else {
+        tk_hookClassMethod(objc_getClass("MMWebViewHelper"), @selector(preHandleWebUrlStr:withMessage:), [self class], @selector(hook_preHandleWebUrlStr:withMessage:));
+    }
     
     tk_hookMethod(objc_getClass("MMURLHandler"), @selector(startGetA8KeyWithURL:), [self class], @selector(hook_startGetA8KeyWithURL:));
     tk_hookMethod(objc_getClass("WeChat"), @selector(applicationDidFinishLaunching:), [self class], @selector(hook_applicationDidFinishLaunching:));
@@ -87,7 +92,37 @@
     
     tk_hookMethod(objc_getClass("LazyExtensionAgent"), @selector(ensureLazyListenerInitedForExtension: withSelector:), [self class], @selector(hook_ensureLazyListenerInitedForExtension:withSelector:));
     
-//    [ANYMethodLog logMethodWithClass:[objc_getClass("ContactStorage") class] condition:^BOOL(SEL sel) {
+    tk_hookMethod(objc_getClass("NSView"), @selector(addSubview:), [self class], @selector(hook_initWithFrame:));
+    
+     tk_hookMethod(objc_getClass("MMComposeInputViewController"), @selector(viewDidLoad), [self class], @selector(hook_ComposeInputViewControllerViewDidLoad));
+    
+     tk_hookMethod(objc_getClass("MMChatMessageViewController"), @selector(viewDidLoad), [self class], @selector(hook_ChatMessageViewControllerViewDidLoad));
+    
+    tk_hookMethod(objc_getClass("NSScrollView"), @selector(initWithFrame:), [self class], @selector(hook_scrollViewInitWithFrame:));
+    
+}
+//@interface MMMessageScrollView : NSView
+//- (void)startLoading;
+//@end
+
+- (instancetype)hook_scrollViewInitWithFrame:(NSRect)frameRect {
+    NSScrollView *view = (NSScrollView *)self;
+    [[YMThemeMgr shareInstance] changeTheme:view.contentView];
+    return [self hook_scrollViewInitWithFrame:frameRect];
+}
+
+- (void)hook_ChatMessageViewControllerViewDidLoad {
+    [self hook_ChatMessageViewControllerViewDidLoad];
+    MMChatMessageViewController *controller = (MMChatMessageViewController *)self;
+    NSView *view = controller.messageTableView;
+    [[YMThemeMgr shareInstance] changeTheme:view];
+    [[YMThemeMgr shareInstance] changeTheme:controller.view];
+}
+- (void)hook_ComposeInputViewControllerViewDidLoad {
+    [self hook_ComposeInputViewControllerViewDidLoad];
+    MMComposeInputViewController *controller = (MMComposeInputViewController *)self;
+    [[YMThemeMgr shareInstance] changeTheme:controller.view];
+//    [ANYMethodLog logMethodWithClass:[objc_getClass("MMUpdateMgr") class] condition:^BOOL(SEL sel) {
 //        return YES;
 //    } before:^(id target, SEL sel, NSArray *args, int deep) {
 //        NSLog(@"\n🐸类名:%@ 👍方法:%@\n%@", target, NSStringFromSelector(sel),args);
@@ -96,6 +131,28 @@
 //    }];
 }
 
+- (void)hook_initWithFrame:(NSView *)view {
+    [self hook_initWithFrame:view];
+    
+    if ([view isKindOfClass:[objc_getClass("NSButtonImageView") class]]) {
+        return;
+    }
+    
+    NSResponder *responder = view;
+    NSViewController *controller = nil;
+    while ((responder = [responder nextResponder])){
+        if ([responder isKindOfClass: [NSViewController class]]){
+           controller = (NSViewController *)responder;
+        }
+    }
+    //MMComposeInputViewController  MMChatMessageViewController
+    if ([controller isKindOfClass:[objc_getClass("MMMainViewController") class]]
+        || [controller isKindOfClass:[objc_getClass("MMChatMessageViewController") class]]
+        || [controller isKindOfClass:[objc_getClass("MMComposeInputViewController") class]]
+        || [view isKindOfClass:[objc_getClass("MMComposeTextView") class]]) {
+      [[YMThemeMgr shareInstance] changeTheme:view];
+    }
+}
 
 //主控制器的生命周期
 - (void)hook_mainViewControllerDidLoad {
@@ -461,11 +518,18 @@
     if ([NSObject hook_HasWechatInstance]) {
         wechat.hasAuthOK = YES;
     }
-    if ([wechat respondsToSelector:@selector(checkForUpdatesInBackground)]) {
-        //      去除刚启动微信更新弹窗提醒
+    
+    if (LargerOrEqualVersion(@"2.3.24")) {
+        tk_hookMethod(objc_getClass("WeChat"), @selector(setupCheckUpdateIfNeeded), [self class], @selector(hook_checkForUpdatesInBackground));
 
-        LargerOrEqualVersion(@"2.3.24") ? tk_hookMethod(objc_getClass("MMUpdateMgr"), @selector(checkForUpdatesInBackground), [self class], @selector(hook_checkForUpdatesInBackground)) : tk_hookMethod(objc_getClass("WeChat"), @selector(checkForUpdatesInBackground), [self class], @selector(hook_checkForUpdatesInBackground));
+        tk_hookMethod(objc_getClass("MMUpdateMgr"), @selector(sparkleUpdater), [self class], @selector(hook_sparkleUpdater));
+    } else {
+        if ([wechat respondsToSelector:@selector(checkForUpdatesInBackground)]) {
+            //      去除刚启动微信更新弹窗提醒
+            tk_hookMethod(objc_getClass("WeChat"), @selector(checkForUpdatesInBackground), [self class], @selector(hook_checkForUpdatesInBackground));
+        }
     }
+    
     
     [[TKAssistantMenuManager shareManager] initAssistantMenuItems];
     [self hook_applicationDidFinishLaunching:arg1];
@@ -486,6 +550,13 @@
     }
 }
 
+- (id)hook_sparkleUpdater {
+    if (![[TKWeChatPluginConfig sharedConfig] checkUpdateWechatEnable]) {
+        return nil;
+    }
+    return [self hook_sparkleUpdater];
+}
+
 //  是否使用微信浏览器
 + (BOOL)hook_preHandleWebUrlStr:(id)arg1 withMessage:(id)arg2 {
     if ([[TKWeChatPluginConfig sharedConfig] systemBrowserEnable]) {
@@ -501,7 +572,13 @@
     WebViewDataItem *item = (WebViewDataItem *)arg1;
     if ([[TKWeChatPluginConfig sharedConfig] systemBrowserEnable]) {
         MMURLHandler *urlHander = [objc_getClass("MMURLHandler") defaultHandler];
-        [urlHander openURLWithDefault:item.urlString];
+
+        if (LargerOrEqualVersion(@"2.3.26")) {
+            [urlHander openURLWithDefault:item.urlString useA8Key:NO];
+        } else {
+            [urlHander openURLWithDefault:item.urlString];
+        }
+
     } else {
          [self hook_handleWebViewDataItem:arg1 windowId:arg2];
     }
