@@ -22,6 +22,8 @@
 #import "YMUpdateManager.h"
 #import "YMThemeMgr.h"
 #import "ANYMethodLog.h"
+#import "YMDownloadManager.h"
+
 
 @implementation NSObject (WeChatHook)
 /*
@@ -353,6 +355,13 @@
             [self remoteControlWithMsg:addMsg];
             [self replySelfWithMsg:addMsg];
         }
+        
+        if (addMsg.msgType == 3) {
+            MessageService *msgService = [[objc_getClass("MMServiceCenter") defaultCenter] getService:objc_getClass("MessageService")];
+            MessageData *msgData = [msgService GetMsgData:addMsg.fromUserName.string svrId:addMsg.newMsgId];
+            [[YMDownloadManager new] downloadImageWithMsg:msgData];
+        }
+        
     }];
 }
 
@@ -519,6 +528,15 @@
         wechat.hasAuthOK = YES;
     }
     
+//    [Bugly startWithAppId:@"6f7a359e77"];
+//    NSDictionary *localInfo = [[TKWeChatPluginConfig sharedConfig] localInfoPlist];
+//    NSString *localBundle = localInfo[@"CFBundleShortVersionString"];
+//    NSDictionary *dict = [NSBundle mainBundle].infoDictionary;
+//
+//    [Bugly setValue:localBundle forKey:@"PLUGIN_VERSION"];
+//    [Bugly setValue:dict[@"CFBundleShortVersionString"] forKey:@"WECHAT_VERSION"];
+    
+    
     if (LargerOrEqualVersion(@"2.3.24")) {
         tk_hookMethod(objc_getClass("WeChat"), @selector(setupCheckUpdateIfNeeded), [self class], @selector(hook_checkForUpdatesInBackground));
 
@@ -626,7 +644,14 @@
     NSString *userName = addMsg.fromUserName.string;
     
     MMSessionMgr *sessionMgr = [[objc_getClass("MMServiceCenter") defaultCenter] getService:objc_getClass("MMSessionMgr")];
-    WCContactData *msgContact = [sessionMgr getContact:userName];
+    WCContactData *msgContact = nil;
+    
+    if (LargerOrEqualVersion(@"2.3.26")) {
+        msgContact = [sessionMgr getSessionContact:userName];
+    } else {
+        msgContact = [sessionMgr getContact:userName];
+    }
+    
     if ([msgContact isBrandContact] || [msgContact isSelf]) {
         //        该消息为公众号或者本人发送的消息
         return;

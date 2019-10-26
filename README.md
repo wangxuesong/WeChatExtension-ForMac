@@ -3,12 +3,14 @@
 <img src="https://github.com/MustangYM/WeChatExtension-ForMac/blob/master/WeChatExtension/Rely/Pictures/face.png" width="1000px"/>
 </p>
 
+![platform](https://img.shields.io/badge/platform-macos-lightgrey.svg)  [![release](https://img.shields.io/badge/release-v1.9.6-brightgreen.svg)](https://github.com/MustangYM/WeChatExtension-ForMac/releases)  ![support](https://img.shields.io/badge/support-wechat%202.3.27-blue.svg)
+
 ## 声明
 > 适用于Mac版的WeChat拓展功能, 由于之前大家常用的WeChatPlugin在默认分支切换成remove删库了, 坊间猜测原因, 众说纷纭, 我们不去深究了.
 本着开源的精神, 我决定继续维护这个项目, 对[tk](https://github.com/TKkk-iOSer)在此表示感谢!
 
 ## 最新支持版本
->  mac版微信2.3.26
+>  mac版微信2.3.27
 
 ## 手机端也能收到被撤回的消息
 1. > 如果Mac拦截到A发送来的消息, 手机也会同步收到的这条已经拦截的消息(自己发送给自己). 目前只支持同步文字消息与图片消息, 其他类型也可以做, 但意义不大.
@@ -37,30 +39,48 @@
 <img src="https://github.com/MustangYM/WeChatExtension-ForMac/blob/master/WeChatExtension/Rely/Pictures/WX20190726-183915%402x.png" width="800px"/>
 </p>
 
-## 安装方法
-1. > 确保你的Mac上已经安装了微信App.
+## 懒癌版安装
 
-2. > 下载本项目到你的电脑里, 并双击打开.
+<p align="left">
+<img src="https://avatars1.githubusercontent.com/u/5035625?s=400&v=4" width="100px"/>
+</p>
+
+感谢 [lmk123](https://github.com/lmk123)为此项目开发的懒癌安装 [Oh My WeChat](https://github.com/lmk123/oh-my-wechat)
+
+打开`应用程序-实用工具-Terminal(终端)`，执行下面的命令安装 [Oh My WeChat](https://github.com/lmk123/oh-my-wechat)：
+
+```sh
+curl -o- -L https://raw.githubusercontent.com/lmk123/oh-my-wechat/master/install.sh | bash -s
+```
+
+安装完成后会自动安装微信插件，可以访问 [Oh My WeChat 的项目主页](https://github.com/lmk123/oh-my-wechat#oh-my-wechat)查看更多用法。
+
+
+## 普通安装
+
+#### 1. 确保你的Mac上已经安装了微信App.
+
+#### 2. 下载本项目到你的电脑里, 并双击打开.
 <p align="center">
 <img src="https://github.com/MustangYM/WeChatExtension-ForMac/blob/master/WeChatExtension/Rely/Pictures/WX20190619-112238.png" width="800px"/>
 </p>
 
-3. > 依次打开文件夹
+##### 3. 依次打开文件夹
 <p align="center">
 <img src="https://github.com/MustangYM/WeChatExtension-ForMac/blob/master/WeChatExtension/Rely/Pictures/WX20190619-113413%402x.png" width="800px"/>
 </p>
 
-4. > 打开你电脑中的终端工具
+#### 4. 打开你电脑中的终端工具
 <p align="center">
 <img src="https://github.com/MustangYM/WeChatExtension-ForMac/blob/master/WeChatExtension/Rely/Pictures/WX20190619-113911%402x.png" width="800px"/>
 </p>
-
-2. > 在Rely/Install.sh执行这个安装脚本
+ 
+#### 5. 在Rely/Install.sh执行这个安装脚本
 <p align="center">
 <img src="https://github.com/MustangYM/WeChatExtension-ForMac/blob/master/WeChatExtension/Rely/Pictures/QQ20190425-155120%402x.png" width="800px"/>
 </p>
 
-3. > 重启微信, 安装完成.
+#### 6. 重启微信, 安装完成.
 
 ## 怎么卸载?
 1. > 在Rely文件夹中找到Uninstall.sh
@@ -99,6 +119,7 @@
 
 ## 更新日志
 ```
+2019-8-07 修复联系人信息获取接口改变导致自动回复和Alfred的大面积闪退, sorry. 新增自动下载聊天高清图功能.
 2019-7-26 适配2.3.26版本, 修复闪退, 屏蔽更新.
 2019-7-10 修复清除空会话闪退
 2019-6-28 修复消息筛选Bug, 群聊撤回同步到手机显示真实联系人昵称
@@ -112,6 +133,10 @@
 2019-5-10 现在在最新版的微信中的多开和消息撤回是可以用的, 如果不能用, 请检查小助手的版本. 
 
 ```
+
+## 交流QQ群
+> 一群 229555512
+> 二群 239049786
 
 ## 维护不易, 可以请我喝咖啡
 > 算了吧, 咱逆向的都是屌丝, 哪有闲钱.
