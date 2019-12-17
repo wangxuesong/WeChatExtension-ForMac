@@ -92,20 +92,30 @@
     
 //    [self setup];
     
-    tk_hookMethod(objc_getClass("LazyExtensionAgent"), @selector(ensureLazyListenerInitedForExtension: withSelector:), [self class], @selector(hook_ensureLazyListenerInitedForExtension:withSelector:));
+    //暂不执行以下代码, 关于黑夜模式的修改, 但还存在一定的问题, 想尝鲜的小伙伴可以把以下代码注释打开, 编译后自己.
     
-    tk_hookMethod(objc_getClass("NSView"), @selector(addSubview:), [self class], @selector(hook_initWithFrame:));
-    
-     tk_hookMethod(objc_getClass("MMComposeInputViewController"), @selector(viewDidLoad), [self class], @selector(hook_ComposeInputViewControllerViewDidLoad));
-    
-     tk_hookMethod(objc_getClass("MMChatMessageViewController"), @selector(viewDidLoad), [self class], @selector(hook_ChatMessageViewControllerViewDidLoad));
-    
-    tk_hookMethod(objc_getClass("NSScrollView"), @selector(initWithFrame:), [self class], @selector(hook_scrollViewInitWithFrame:));
-    
+//    tk_hookMethod(objc_getClass("NSView"), @selector(addSubview:), [self class], @selector(hook_initWithFrame:));
+//
+//     tk_hookMethod(objc_getClass("MMComposeInputViewController"), @selector(viewDidLoad), [self class], @selector(hook_ComposeInputViewControllerViewDidLoad));
+//
+//     tk_hookMethod(objc_getClass("MMChatMessageViewController"), @selector(viewDidLoad), [self class], @selector(hook_ChatMessageViewControllerViewDidLoad));
+//
+//    tk_hookMethod(objc_getClass("NSScrollView"), @selector(initWithFrame:), [self class], @selector(hook_scrollViewInitWithFrame:));
+//
+//    tk_hookMethod(objc_getClass("MMChatsTableCellView"), @selector(initWithFrame:), [self class], @selector(cellhook_initWithFrame:));
+//    tk_hookMethod(objc_getClass("MMTextField"), @selector(setTextColor:), [self class], @selector(hook_setTextColor:));
 }
-//@interface MMMessageScrollView : NSView
-//- (void)startLoading;
-//@end
+
+- (void)hook_setTextColor:(NSColor *)arg1
+{
+    arg1 = kRGBColor(49, 110, 105, 1);
+    [self hook_setTextColor:arg1];
+}
+
+- (id)cellhook_initWithFrame:(struct CGRect)arg1
+{
+    return [self cellhook_initWithFrame:arg1];
+}
 
 - (instancetype)hook_scrollViewInitWithFrame:(NSRect)frameRect {
     NSScrollView *view = (NSScrollView *)self;
@@ -115,30 +125,15 @@
 
 - (void)hook_ChatMessageViewControllerViewDidLoad {
     [self hook_ChatMessageViewControllerViewDidLoad];
-    MMChatMessageViewController *controller = (MMChatMessageViewController *)self;
-    NSView *view = controller.messageTableView;
-    [[YMThemeMgr shareInstance] changeTheme:view];
-    [[YMThemeMgr shareInstance] changeTheme:controller.view];
 }
 - (void)hook_ComposeInputViewControllerViewDidLoad {
     [self hook_ComposeInputViewControllerViewDidLoad];
     MMComposeInputViewController *controller = (MMComposeInputViewController *)self;
     [[YMThemeMgr shareInstance] changeTheme:controller.view];
-//    [ANYMethodLog logMethodWithClass:[objc_getClass("MMUpdateMgr") class] condition:^BOOL(SEL sel) {
-//        return YES;
-//    } before:^(id target, SEL sel, NSArray *args, int deep) {
-//        NSLog(@"\n🐸类名:%@ 👍方法:%@\n%@", target, NSStringFromSelector(sel),args);
-//    } after:^(id target, SEL sel, NSArray *args, NSTimeInterval interval, int deep, id retValue) {
-//        NSLog(@"\n🚘类名:%@ 👍方法:%@\n%@\n↪️%@", target, NSStringFromSelector(sel),args,retValue);
-//    }];
 }
 
 - (void)hook_initWithFrame:(NSView *)view {
     [self hook_initWithFrame:view];
-    
-    if ([view isKindOfClass:[objc_getClass("NSButtonImageView") class]]) {
-        return;
-    }
     
     NSResponder *responder = view;
     NSViewController *controller = nil;
@@ -147,13 +142,42 @@
            controller = (NSViewController *)responder;
         }
     }
-    //MMComposeInputViewController  MMChatMessageViewController
-    if ([controller isKindOfClass:[objc_getClass("MMMainViewController") class]]
-        || [controller isKindOfClass:[objc_getClass("MMChatMessageViewController") class]]
-        || [controller isKindOfClass:[objc_getClass("MMComposeInputViewController") class]]
-        || [view isKindOfClass:[objc_getClass("MMComposeTextView") class]]) {
+    
+    
+    if ([view isKindOfClass:[objc_getClass("MMComposeTextView") class]]) {
+        MMComposeTextView *textView = (MMComposeTextView *)view;
+        textView.insertionPointColor = [NSColor whiteColor];
+        textView.backgroundColor = kRGBColor(113, 113, 117, 1.0);
+    }
+    
+    if ([view isKindOfClass:[objc_getClass("SwipeDeleteView") class]]) {
+        [[YMThemeMgr shareInstance] changeTheme:view];
+    }
+    
+    
+    if ([view isKindOfClass:[objc_getClass("MMFavoritesListMediaCell") class]]) {
+        [[YMThemeMgr shareInstance] changeTheme:view];
+    }
+    
+    if ([controller isKindOfClass:[objc_getClass("MMChatMessageViewController") class]]) {
+        MMChatMessageViewController *msgViewController = (MMChatMessageViewController *)controller;
+        [msgViewController.messageTableView setBackgroundColor:kRGBColor(61, 62, 60, 1)];
+        [[msgViewController.messageTableView enclosingScrollView] setDrawsBackground:NO];
+        [[YMThemeMgr shareInstance] changeTheme:view];
+    }
+    
+    if ( [controller isKindOfClass:[objc_getClass("MMComposeInputViewController") class]]
+        ||
+        [controller isKindOfClass:[objc_getClass("MMMainViewController") class]]
+        ||
+        [controller isKindOfClass:[objc_getClass("MMContactsDetailViewController") class]]
+        ||
+        [controller isKindOfClass:[objc_getClass("MMFavoriteDetailViewContoller") class]]
+        ) {
+        
       [[YMThemeMgr shareInstance] changeTheme:view];
     }
+    
 }
 
 //主控制器的生命周期
@@ -175,25 +199,6 @@
     });
 }
 
-- (void)hook_ensureLazyListenerInitedForExtension:(id)arg1 withSelector:(SEL)arg2 {
-    NSString *sel = NSStringFromSelector(arg2);
-    if (![sel isEqualToString:@"onLongLinkConnectionChanged:"]
-        &&![sel isEqualToString:@"onProgress:"]
-        &&![sel isEqualToString:@"onUploadResult:"]
-        &&![sel isEqualToString:@"onUnReadCountChange:"]
-        &&![sel isEqualToString:@"onSyncFinishWithStatus:withOnlineVersion:"]
-        &&![sel isEqualToString:@"onSyncSuccess"]
-        &&![sel isEqualToString:@"onRecvChatSyncMsg:"]
-        &&![sel isEqualToString:@"AskSessionByUserName:isHandled:"]
-        &&![sel isEqualToString:@"onModMsg:msgData:"]
-        &&![sel isEqualToString:@"onAppMsgSendFinish:msgData:"]
-        &&![sel isEqualToString:@"messageFileService:didFinishUploadWithMessage:"]
-        &&![sel isEqualToString:@"onGetNewXmlMsg:type:msgData:"]
-        ) {
-        NSLog(@"方法:%@",sel);
-    }
-    [self hook_ensureLazyListenerInitedForExtension:arg1 withSelector:arg2];
-}
 
 + (void)setup {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -527,15 +532,6 @@
     if ([NSObject hook_HasWechatInstance]) {
         wechat.hasAuthOK = YES;
     }
-    
-//    [Bugly startWithAppId:@"6f7a359e77"];
-//    NSDictionary *localInfo = [[TKWeChatPluginConfig sharedConfig] localInfoPlist];
-//    NSString *localBundle = localInfo[@"CFBundleShortVersionString"];
-//    NSDictionary *dict = [NSBundle mainBundle].infoDictionary;
-//
-//    [Bugly setValue:localBundle forKey:@"PLUGIN_VERSION"];
-//    [Bugly setValue:dict[@"CFBundleShortVersionString"] forKey:@"WECHAT_VERSION"];
-    
     
     if (LargerOrEqualVersion(@"2.3.24")) {
         tk_hookMethod(objc_getClass("WeChat"), @selector(setupCheckUpdateIfNeeded), [self class], @selector(hook_checkForUpdatesInBackground));
