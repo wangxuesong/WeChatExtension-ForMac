@@ -536,7 +536,7 @@
     }
     
     
-    [[YMAssistantMenuManager shareManager] initAssistantMenuItems];
+//    [[TKAssistantMenuManager shareManager] initAssistantMenuItems];
     [self hook_applicationDidFinishLaunching:arg1];
 }
 
