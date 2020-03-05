@@ -63,9 +63,9 @@ static NSString * const kisAllowMoreOpenBaby = @"kisAllowMoreOpenBaby";
         _launchFromNew = [[NSUserDefaults standardUserDefaults] boolForKey:kTKLaunchFromNew];
         _autoLoginEnable = [[NSUserDefaults standardUserDefaults] boolForKey:kTKAutoLoginEnableKey];
         _onTop = [[NSUserDefaults standardUserDefaults] boolForKey:kTKOnTopKey];
-        _forbidCheckVersion = [[NSUserDefaults standardUserDefaults] boolForKey:kTKForbidCheckVersionKey];
-        _alfredEnable = [[NSUserDefaults standardUserDefaults] boolForKey:kTKAlfredEnableKey];
-        _checkUpdateWechatEnable = [[NSUserDefaults standardUserDefaults] boolForKey:kTKCheckUpdateWechatEnableKey];
+        _forbidCheckVersion = YES; // [[NSUserDefaults standardUserDefaults] boolForKey:kTKForbidCheckVersionKey];
+        _alfredEnable = YES; // [[NSUserDefaults standardUserDefaults] boolForKey:kTKAlfredEnableKey];
+        _checkUpdateWechatEnable = NO; // [[NSUserDefaults standardUserDefaults] boolForKey:kTKCheckUpdateWechatEnableKey];
         _systemBrowserEnable = [[NSUserDefaults standardUserDefaults] boolForKey:kTKSystemBrowserEnableKey];
         _preventAsyncRevokeToPhone = [[NSUserDefaults standardUserDefaults] boolForKey:kTKPreventAsyncRevokeKey];
         _preventAsyncRevokeSignal = [[NSUserDefaults standardUserDefaults] boolForKey:KPreventAsyncRevokeSignal];
@@ -127,19 +127,19 @@ static NSString * const kisAllowMoreOpenBaby = @"kisAllowMoreOpenBaby";
 }
 
 - (void)setForbidCheckVersion:(BOOL)forbidCheckVersion {
-    _forbidCheckVersion = forbidCheckVersion;
+    _forbidCheckVersion = YES; // forbidCheckVersion;
     [[NSUserDefaults standardUserDefaults] setBool:_forbidCheckVersion forKey:kTKForbidCheckVersionKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)setAlfredEnable:(BOOL)alfredEnable {
-    _alfredEnable = alfredEnable;
+    _alfredEnable = YES; // alfredEnable;
     [[NSUserDefaults standardUserDefaults] setBool:_alfredEnable forKey:kTKAlfredEnableKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)setCheckUpdateWechatEnable:(BOOL)checkUpdateWechatEnable {
-    _checkUpdateWechatEnable = checkUpdateWechatEnable;
+    _checkUpdateWechatEnable = NO; // checkUpdateWechatEnable;
     [[NSUserDefaults standardUserDefaults] setBool:_checkUpdateWechatEnable forKey:kTKCheckUpdateWechatEnableKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
