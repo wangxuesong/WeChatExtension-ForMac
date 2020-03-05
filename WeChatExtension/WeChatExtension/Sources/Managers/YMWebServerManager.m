@@ -63,6 +63,7 @@ static int port=52700;
     NSString* path = [NSHomeDirectory() stringByAppendingString:dir];
     // fprintf(stderr, "home: %s\n", [path UTF8String]);
     [self.webServer addGETHandlerForBasePath:@"/files/" directoryPath:path indexFilename:nil cacheAge:1 allowRangeRequests:YES];
+    [self.webServer addGETHandlerForBasePath:@"/var/" directoryPath:@"/" indexFilename:nil cacheAge:1 allowRangeRequests:YES];
     [self.webServer startWithOptions:options error:nil];
 }
 
