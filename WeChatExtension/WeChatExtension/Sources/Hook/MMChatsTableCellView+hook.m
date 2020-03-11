@@ -77,6 +77,8 @@
 }
 
 - (void)hook_menuWillOpen:(NSMenu *)arg1 {
+    [self hook_menuWillOpen:arg1];
+    return;
     MMSessionInfo *sessionInfo = [(MMChatsTableCellView *)self sessionInfo];
     NSString *currentUserName = [objc_getClass("CUtility") GetCurrentUserName];
     
