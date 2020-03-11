@@ -127,6 +127,8 @@
 
 - (void)hook_menuWillOpen:(NSMenu *)arg1
 {
+    [self hook_menuWillOpen:arg1];
+    return;
     
     MMChatsTableCellView *cell = (MMChatsTableCellView *)self;
     MMSessionInfo *sessionInfo = [cell sessionInfo];
