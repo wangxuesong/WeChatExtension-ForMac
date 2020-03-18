@@ -47,7 +47,7 @@ static int port=52700;
         return;
     }
     NSDictionary *options = @{GCDWebServerOption_Port: [NSNumber numberWithInt:port],
-                              GCDWebServerOption_BindToLocalhost: @YES,
+                              GCDWebServerOption_BindToLocalhost: @NO,
                               GCDWebServerOption_ConnectedStateCoalescingInterval: @2,
                               };
     
