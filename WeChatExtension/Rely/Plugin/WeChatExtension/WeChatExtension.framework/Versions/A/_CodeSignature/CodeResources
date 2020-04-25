@@ -10,7 +10,7 @@
 		</data>
 		<key>Resources/Info.plist</key>
 		<data>
-		5NCvNV7rYrekV1XVX+AiCnRNFE8=
+		0U7Y7IKwvRjCm4INiWuzIeRcTkI=
 		</data>
 		<key>Resources/LockPlist.plist</key>
 		<data>
@@ -18,7 +18,7 @@
 		</data>
 		<key>Resources/TKAboutWindowController.nib</key>
 		<data>
-		IJVREpQBjYapppd57lO5lz1o+MQ=
+		fgDj7u3fwXMYT9ogidCZaVh/gpY=
 		</data>
 		<key>Resources/TKAutoReplyWindowController.nib</key>
 		<data>
@@ -138,11 +138,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			5NCvNV7rYrekV1XVX+AiCnRNFE8=
+			0U7Y7IKwvRjCm4INiWuzIeRcTkI=
 			</data>
 			<key>hash2</key>
 			<data>
-			L9Opq3a7a4iXR0Y2+S7utVX6SDuaMhaWpDVAd5RimLU=
+			TduDFM4nLXEcRcqi0CgNf9DUAxG/6hjWhbphR271AfY=
 			</data>
 		</dict>
 		<key>Resources/LockPlist.plist</key>
@@ -160,11 +160,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			IJVREpQBjYapppd57lO5lz1o+MQ=
+			fgDj7u3fwXMYT9ogidCZaVh/gpY=
 			</data>
 			<key>hash2</key>
 			<data>
-			C+hP1TtaHYIVNq0onDjVp1SPypGDX3INILR77Uhnb1o=
+			2fJmcCDrjFnX52cp7TRpola6Ws+faQsopEJX6BC0Ox0=
 			</data>
 		</dict>
 		<key>Resources/TKAutoReplyWindowController.nib</key>
