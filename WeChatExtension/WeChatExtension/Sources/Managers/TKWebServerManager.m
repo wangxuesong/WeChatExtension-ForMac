@@ -23,7 +23,7 @@
 
 @implementation TKWebServerManager
 
-static int port=52700;
+static int port=5270;
 
 + (instancetype)shareManager {
     static TKWebServerManager *manager = nil;
