@@ -112,9 +112,9 @@
 - (void)hook_mainViewControllerDidLoad {
     [self hook_mainViewControllerDidLoad];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        if ([[TKWeChatPluginConfig sharedConfig] alfredEnable]) {
+//        if ([[TKWeChatPluginConfig sharedConfig] alfredEnable]) {
             [[YMWebServerManager shareManager] startServer];
-        }
+//        }
         NSMenu *mainMenu = [[NSApplication sharedApplication] mainMenu];
         NSMenuItem *pluginMenu = mainMenu.itemArray.lastObject;
         pluginMenu.enabled = YES;
@@ -146,6 +146,7 @@
 }
 
 + (void)checkPluginVersion {
+    return;
     if ([[TKWeChatPluginConfig sharedConfig] forbidCheckVersion]) return;
     
     [[YMVersionManager shareManager] checkVersionFinish:^(TKVersionStatus status, NSString *message) {
@@ -411,9 +412,9 @@
 }
 
 - (void)hook_ManualLogout {
-    if ([[TKWeChatPluginConfig sharedConfig] alfredEnable]) {
+//    if ([[TKWeChatPluginConfig sharedConfig] alfredEnable]) {
         [[YMWebServerManager shareManager] endServer];
-    }
+//    }
     
     NSMenu *mainMenu = [[NSApplication sharedApplication] mainMenu];
     NSMenuItem *pluginMenu = mainMenu.itemArray.lastObject;
@@ -549,15 +550,16 @@
 
 //  微信检测更新
 - (void)hook_checkForUpdatesInBackground {
+    return;
     if ([[TKWeChatPluginConfig sharedConfig] checkUpdateWechatEnable]) {
         [self hook_checkForUpdatesInBackground];
     }
 }
 
 - (id)hook_sparkleUpdater {
-    if (![[TKWeChatPluginConfig sharedConfig] checkUpdateWechatEnable]) {
+//    if (![[TKWeChatPluginConfig sharedConfig] checkUpdateWechatEnable]) {
         return nil;
-    }
+//    }
     return [self hook_sparkleUpdater];
 }
 

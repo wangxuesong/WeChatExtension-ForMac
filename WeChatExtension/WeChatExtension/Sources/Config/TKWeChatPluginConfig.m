@@ -341,11 +341,11 @@ static NSString * const kTKWeChatRemotePlistPath = @"https://raw.githubuserconte
 }
 
 - (BOOL)usingTheme {
-    return self.darkMode || self.blackMode || self.pinkMode;
+    return false; //self.darkMode || self.blackMode || self.pinkMode;
 }
 
 - (BOOL)usingDarkTheme {
-    return self.darkMode || self.blackMode;
+    return false; //self.darkMode || self.blackMode;
 }
 
 - (NSColor *)mainTextColor {
