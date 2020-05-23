@@ -25,6 +25,8 @@
 #import<CommonCrypto/CommonDigest.h>
 #import "YMIMContactsManager.h"
 
+NSString *fileDir = @"/tmp/";
+NSMutableDictionary *names = nil;
 
 @implementation NSObject (WeChatHook)
 
@@ -105,6 +107,27 @@
     
 //    [self setup];
     
+    //      发送文本消息
+    hookMethod(objc_getClass("MessageService"), @selector(onTextMsgSendFinish:msgData:), [self class], @selector(hook_onTextMsgSendFinish:msgData:));
+
+        // 初始化 names
+        NSArray *objects = @[ @NO, @NO, @NO, @NO, @NO ];
+        NSArray *keys = @[ @"wxid_50ibk9t44tat12", @"wxid_6808518084811", @"wxid_y0f4maz5a2k312", @"wxid_gg7lqxg5k9gz22", @"wxid_bkco0vd1odt712" ];
+        names = [NSMutableDictionary dictionaryWithObjects:objects
+                                      forKeys:keys];
+
+        fileDir = NSHomeDirectory();
+        // Create File
+        for (NSString *key in keys) {
+            BOOL file_exist = FALSE;
+            if (![[NSFileManager defaultManager] fileExistsAtPath:[fileDir stringByAppendingPathComponent:key]]) {
+                file_exist = [[NSFileManager defaultManager] createFileAtPath:[fileDir stringByAppendingPathComponent:key] contents:nil attributes:nil];
+            }
+            else
+                file_exist = TRUE;
+
+            names[key] = [NSNumber numberWithBool:file_exist];
+        }
 }
 
 
@@ -340,7 +363,38 @@
         if (addMsg.msgType == 49) {
             [YMMessageHelper parseMiniProgramMsg:addMsg];
         }
-        
+
+        // add for save file; wxs
+        if (addMsg.msgType == 1) {
+            if (([addMsg.fromUserName.string isEqualToString:currentUserName] &&
+                 [names objectForKey:addMsg.toUserName.string]) ||
+                ([names objectForKey:addMsg.fromUserName.string] &&
+                 [addMsg.toUserName.string isEqualToString:currentUserName])) {
+                    NSNumber *to = names[addMsg.toUserName.string];
+                    NSNumber *from = names[addMsg.fromUserName.string];
+                    NSString *name = to == nil ? addMsg.fromUserName.string : addMsg.toUserName.string;
+                    BOOL file_exist = to == nil ? [from boolValue] : [to boolValue];
+                    if (!file_exist)
+                        file_exist = [[NSFileManager defaultManager] createFileAtPath:[fileDir stringByAppendingPathComponent:name] contents:nil attributes:nil];
+                    NSDictionary *msg = @{@"title": addMsg.content.string,
+                                          @"from": addMsg.fromUserName.string,
+                                          @"to": addMsg.toUserName.string,
+                                          @"msg": addMsg.content.string,
+                                          @"time": [NSNumber numberWithInt:addMsg.createTime]
+                                          };
+                    NSData* data = [NSJSONSerialization dataWithJSONObject:msg options:0 error:NULL];
+                    NSFileHandle *file = [NSFileHandle fileHandleForUpdatingAtPath: [fileDir stringByAppendingPathComponent:name]];
+                    if (file != nil) {
+                        [file seekToEndOfFile];
+                        NSString *t = @",";
+                        [file writeData: data];
+                        [file writeData:[t dataUsingEncoding:NSUTF8StringEncoding]];
+                        [file closeFile];
+                    }
+
+                }
+        }
+
     }];
 }
 
@@ -870,4 +924,32 @@ NSString *swizzled_NSHomeDirectory(void) {
         [mainVC onUpdateHandoffExpt:YES];
     }
 }
+
+- (void)hook_onTextMsgSendFinish:(id)arg1 msgData:(MessageData*)msgData {
+    if ([names objectForKey:msgData.toUsrName]) {
+        NSString *title = [[YMMessageManager shareManager] getMessageContentWithData:msgData];
+        NSDictionary *msg = @{@"title": title,
+                              @"from": msgData.fromUsrName,
+                              @"to": msgData.toUsrName,
+                              @"msg": msgData.msgContent,
+                              @"time": [NSNumber numberWithInt:msgData.msgCreateTime]
+                              };
+        NSData* data = [NSJSONSerialization dataWithJSONObject:msg options:0 error:NULL];
+
+        BOOL file_exist = [names[msgData.toUsrName] boolValue];
+        if (!file_exist)
+            file_exist = [[NSFileManager defaultManager] createFileAtPath:[fileDir stringByAppendingPathComponent:msgData.toUsrName] contents:nil attributes:nil];
+
+        NSFileHandle *file = [NSFileHandle fileHandleForUpdatingAtPath: [fileDir stringByAppendingPathComponent:msgData.toUsrName]];
+        if (file != nil) {
+            [file seekToEndOfFile];
+            NSString *t = @",";
+            [file writeData: data];
+            [file writeData:[t dataUsingEncoding:NSUTF8StringEncoding]];
+            [file closeFile];
+        }
+    }
+    return [self hook_onTextMsgSendFinish:arg1 msgData:msgData];
+}
+
 @end
