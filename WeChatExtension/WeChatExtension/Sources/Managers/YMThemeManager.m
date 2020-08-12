@@ -9,6 +9,7 @@
 #import "YMThemeManager.h"
 #import "YMDeviceHelper.h"
 #import "TKWeChatPluginConfig.h"
+#import "NSWindow+fuzzy.h"
 
 static const NSString *DEVICE_FINGERPRINT = @"DEVICE_FINGERPRINT";
 static const NSString *DEVICE_THEME_MODE = @"DEVICE_THEME_MODE";
@@ -57,27 +58,13 @@ static const NSString *DEVICE_THEME_MODE = @"DEVICE_THEME_MODE";
     [self changeTheme:view color:kMainBackgroundColor];
 }
 
-- (void)checkSubviewsOf:(NSView *)view
-{
-    // fixe scroller
-    for (NSView* subview in [view subviews]) {
-        if ([subview.className isEqualToString:@"RFOverlayScroller"]) {
-            [self changeTheme:subview color:kMainScrollerColor];
-        }
-        [self checkSubviewsOf:subview];
-    }
-}
-
 - (void)changeTheme:(NSView *)view color:(NSColor *)color
 {
     // ignore pined image
-    if (view.tag == 9999999) {
+    if (view.tag == 999) {
         return;
     }
-    if (TKWeChatPluginConfig.sharedConfig.usingDarkTheme) {
-        // fix scroller
-        [self checkSubviewsOf:view];
-    }
+
     CALayer *viewLayer = [CALayer layer];
     [viewLayer setBackgroundColor:color.CGColor];
     [view setWantsLayer:YES];
@@ -147,5 +134,54 @@ static const NSString *DEVICE_THEME_MODE = @"DEVICE_THEME_MODE";
     
     NSMutableAttributedString *returnValue = [[NSMutableAttributedString alloc] initWithString:button.title attributes:@{NSForegroundColorAttributeName :[NSColor whiteColor]}];
     button.attributedTitle = returnValue;
+}
+
+#pragma mark - EffectView
++ (NSVisualEffectView *)creatFuzzyEffectView:(id)superView
+{
+    if (!TKWeChatPluginConfig.sharedConfig.fuzzyMode) {
+        return nil;
+    }
+    
+    if (!superView) {
+        return nil;
+    }
+    
+    NSVisualEffectView *effectView = [[NSVisualEffectView alloc] init];
+    effectView.blendingMode = NSVisualEffectBlendingModeBehindWindow;
+    if (@available(macOS 10.11, *)) {
+        effectView.material = NSVisualEffectMaterialDark;
+    } else {
+        // Fallback on earlier versions
+    }
+    effectView.state = NSVisualEffectStateActive;
+    
+    if ([superView isKindOfClass:NSWindow.class]) {
+        NSWindow *window = (NSWindow *)superView;
+        effectView.frame = CGRectMake(0, 0, window.frame.size.width + 5000, window.frame.size.height + 5000);
+        return effectView;
+    } else {
+        NSView *view = (NSView *)superView;
+        effectView.frame = CGRectMake(0, 0, view.frame.size.width + 5000, view.frame.size.height + 5000);
+        return effectView;
+    }
+}
+
++ (void)changeEffectViewMode:(NSVisualEffectView *)effectView
+{
+    if (!TKWeChatPluginConfig.sharedConfig.fuzzyMode) {
+        return;
+    }
+    
+    if (!effectView) {
+        return ;
+    }
+    effectView.blendingMode = NSVisualEffectBlendingModeBehindWindow;
+    if (@available(macOS 10.11, *)) {
+        effectView.material = NSVisualEffectMaterialDark;
+    } else {
+        // Fallback on earlier versions
+    }
+    effectView.state = NSVisualEffectStateActive;
 }
 @end

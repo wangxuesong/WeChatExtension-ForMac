@@ -223,6 +223,21 @@ FOUNDATION_EXPORT const unsigned char WeChatPluginVersionString[];
 - (id)GetGroupContactList:(id)arg1 ContactType:(id)arg2;
 @end
 
+@interface GroupMember : NSObject
+@property(copy, nonatomic) NSString *m_nsSignature; // @synthesize m_nsSignature=_m_nsSignature;
+@property(copy, nonatomic) NSString *m_nsCity; // @synthesize m_nsCity=_m_nsCity;
+@property(copy, nonatomic) NSString *m_nsProvince; // @synthesize m_nsProvince=_m_nsProvince;
+@property(copy, nonatomic) NSString *m_nsCountry; // @synthesize m_nsCountry=_m_nsCountry;
+@property(copy, nonatomic) NSString *m_nsRemarkFullPY; // @synthesize m_nsRemarkFullPY=_m_nsRemarkFullPY;
+@property(copy, nonatomic) NSString *m_nsRemarkShortPY; // @synthesize m_nsRemarkShortPY=_m_nsRemarkShortPY;
+@property(copy, nonatomic) NSString *m_nsRemark; // @synthesize m_nsRemark=_m_nsRemark;
+@property(nonatomic) unsigned int m_uiSex; // @synthesize m_uiSex=_m_uiSex;
+@property(copy, nonatomic) NSString *m_nsFullPY; // @synthesize m_nsFullPY=_m_nsFullPY;
+@property(copy, nonatomic) NSString *m_nsNickName; // @synthesize m_nsNickName=_m_nsNickName;
+@property(nonatomic) unsigned int m_uiMemberStatus; // @synthesize m_uiMemberStatus=_m_uiMemberStatus;
+@property(copy, nonatomic) NSString *m_nsMemberName; // @synthesize m_nsMemberName=_m_nsMemberName;
+@end
+
 @interface GroupStorage : NSObject
 {
     NSMutableDictionary *m_dictGroupContacts;
@@ -233,6 +248,12 @@ FOUNDATION_EXPORT const unsigned char WeChatPluginVersionString[];
 - (BOOL)IsGroupContactExist:(id)arg1;
 - (BOOL)IsGroupMemberContactExist:(id)arg1;
 - (id)GetGroupContactList:(unsigned int)arg1 ContactType:(unsigned int)arg2;
+- (BOOL)AddGroupMembers:(id)arg1 withGroupUserName:(id)arg2 completion:(id)arg3;
+- (void)CreateGroupChatWithTopic:(id)arg1 groupMembers:(id)arg2 completion:(id)arg3;
+- (void)addChatMemberNeedVerifyMsg:(id)arg1 ContactList:(id)arg2;
+- (BOOL)QuitGroup:(id)arg1 completion:(id)arg2;
+- (BOOL)UIQuitGroup:(id)arg1;
+- (BOOL)UIQuitGroup:(id)arg1 withConfirm:(BOOL)arg2 completion:(id)arg3;
 @end
 
 @interface ChatRoomData : NSObject
@@ -356,6 +377,10 @@ FOUNDATION_EXPORT const unsigned char WeChatPluginVersionString[];
 - (id)getContact:(id)arg1;
 - (id)getSessionContact:(id)arg1;
 - (void)onEnterSession:(id)arg1;
+- (void)loadExtendedMsgData;
+- (void)loadBrandSessionData;
+- (void)loadSessionData;
+- (void)loadData;
 @end
 
 @interface BrandSessionMgr : NSObject
@@ -772,7 +797,7 @@ forHTTPHeaderField:(NSString *)field;
 @end
 
 @interface MMChatMemberListViewController : NSViewController
-
+- (void)startAGroupChatWithSelectedUserNames:(id)arg1;
 @end
 
 @interface MMContactProfileController : NSViewController
@@ -840,3 +865,99 @@ forHTTPHeaderField:(NSString *)field;
 - (BOOL)isMiniProgramProcess;
 @end
 
+@interface MMContactsDetailViewController : NSViewController
+@property(nonatomic) unsigned int mySessionId; // @synthesize mySessionId=_mySessionId;
+@property(nonatomic) __weak NSView *sendGroupMsgBox; // @synthesize sendGroupMsgBox=_sendGroupMsgBox;
+@property(nonatomic) __weak NSTextField *groupChatNameLabel; // @synthesize groupChatNameLabel=_groupChatNameLabel;
+@property(nonatomic) __weak NSImageView *groupChatAVatar; // @synthesize groupChatAVatar=_groupChatAVatar;
+@property(retain, nonatomic) NSView *groupChatContainerView; // @synthesize groupChatContainerView=_groupChatContainerView;
+@property(retain, nonatomic) NSMutableArray *openIMLabelList; // @synthesize openIMLabelList=_openIMLabelList;
+@property(retain, nonatomic) NSMutableArray *valueLabelList; // @synthesize valueLabelList=_valueLabelList;
+@property(retain, nonatomic) NSMutableArray *keyLabelList; // @synthesize keyLabelList=_keyLabelList;
+@property(nonatomic) int macKeyLabelWidth; // @synthesize macKeyLabelWidth=_macKeyLabelWidth;
+@property(nonatomic) int currentDetailIndex; // @synthesize currentDetailIndex=_currentDetailIndex;
+@property(nonatomic) int diffHeight; // @synthesize diffHeight=_diffHeight;
+@property(nonatomic) BOOL friendAdded; // @synthesize friendAdded=_friendAdded;
+@property(retain, nonatomic) WCContactData *currContactData; // @synthesize currContactData=_currContactData;
+@property(retain, nonatomic) NSData *kvGreetingRowPrototype; // @synthesize kvGreetingRowPrototype=_kvGreetingRowPrototype;
+@property(retain, nonatomic) NSData *kvRowPrototype; // @synthesize kvRowPrototype=_kvRowPrototype;
+@property(nonatomic) int addedHeight; // @synthesize addedHeight=_addedHeight;
+@property(retain, nonatomic) NSTextField *remarkInput; // @synthesize remarkInput=_remarkInput;
+@property(retain, nonatomic) NSString *originalRemark; // @synthesize originalRemark=_originalRemark;
+@property(retain, nonatomic) NSTextField *brandDescription; // @synthesize brandDescription=_brandDescription;
+@property(retain, nonatomic) NSView *greetingRow; // @synthesize greetingRow=_greetingRow;
+@property(retain, nonatomic) NSBox *dividerLine; // @synthesize dividerLine=_dividerLine;
+@property(nonatomic) __weak NSView *keyValueContainer; // @synthesize keyValueContainer=_keyValueContainer;
+@property(retain, nonatomic) NSView *keyValueRow; // @synthesize keyValueRow=_keyValueRow;
+@property(retain, nonatomic) NSTextView *descriptionTextView; // @synthesize descriptionTextView=_descriptionTextView;
+@property(nonatomic) __weak NSImageView *avatarImage; // @synthesize avatarImage=_avatarImage;
+@property(nonatomic) __weak NSImageView *sexIcon; // @synthesize sexIcon=_sexIcon;
+@property(nonatomic) __weak NSTextField *contactNameLabel; // @synthesize contactNameLabel=_contactNameLabel;
+@property __weak NSView *contactDetailContainerView; // @synthesize contactDetailContainerView=_contactDetailContainerView;
+@property(retain, nonatomic) MMView *placeHolderView; // @synthesize placeHolderView=_placeHolderView;
+@property(retain, nonatomic) NSView *detailContainerView; // @synthesize detailContainerView=_detailContainerView;
+@property(nonatomic) __weak NSScrollView *scrollViewContainer; // @synthesize scrollViewContainer=_scrollViewContainer;
+@end
+
+@interface MMFavoriteCollectionView : NSCollectionView
+
+@end
+
+@interface MMFavoriteDetailViewContoller : NSViewController
+@property(retain, nonatomic) NSArray *cellsBeingDragged; // @synthesize cellsBeingDragged=_cellsBeingDragged;
+@property(retain, nonatomic) NSArray *allPreviewItems; // @synthesize allPreviewItems=_allPreviewItems; collectionData=_collectionData;
+@property(retain, nonatomic) MMFavoriteCollectionView *collectionView; // @synthesize collectionView=_collectionView;
+@property(nonatomic) unsigned long long currentLayoutStyle; // @synthesize currentLayoutStyle=_currentLayoutStyle;
+@property(retain, nonatomic) NSMutableDictionary *viewerWindowDic; // @synthesize viewerWindowDic=_viewerWindowDic;
+@property(nonatomic) __weak NSView *noSearchResultView; // @synthesize noSearchResultView=_noSearchResultView;
+@property(retain, nonatomic) NSString *searchingString; // @synthesize searchingString=_searchingString;
+@property(nonatomic) unsigned long long lastCalledSearchTime; // @synthesize lastCalledSearchTime=_lastCalledSearchTime;
+@property(retain, nonatomic) id mouseDraggedEvent; // @synthesize mouseDraggedEvent=_mouseDraggedEvent; draggingOverlayView=_draggingOverlayView;
+@property(retain, nonatomic) NSTextField *titleTextField; // @synthesize titleTextField=_titleTextField; delegate=_delegate;
+@end
+
+@interface MMLoginStateMachine : NSObject
+
+@end
+
+@interface SyncService : NSObject
+- (BOOL)ProcessHeartBeatResponse:(id)arg1 isSessionTimeout:(char *)arg2;
+- (BOOL)FillHeartBeatRequestBuffer:(id)arg1 reqCmdId:(int *)arg2 respCmdId:(int *)arg3;
+- (void)CheckHeartBeatIfNeeded;
+- (void)StartCheckHeartBeat;
+- (void)ClearHeartBeat;
+- (void)onServerNotify:(int)arg1 cmdID:(int)arg2 notifyData:(id)arg3;
+- (void)onSyncSuccess;
+- (void)onSyncFail;
+- (void)CheckNeedToSync:(unsigned int)arg1;
+- (void)FixOpenIMSync;
+- (void)BackGroundToForeGroundSync;
+- (void)sendSyncCGIWithScene:(unsigned int)arg1;
+- (BOOL)isSyncClosed;
+- (void)OpenSync;
+- (void)CloseSync;
+- (BOOL)IsNeedSync;
+- (BOOL)IsDoingSync;
+- (BOOL)isCanStartSync;
+- (void)onContactInitSuccess;
+- (void)onContactInitFail;
+- (void)onContactInitUserNameUpdate;
+- (void)onContactInitProcessUpdate:(unsigned int)arg1;
+- (void)tryInitContact;
+- (void)onInitCGIFail;
+- (void)onInitCGIFinish;
+- (void)onInitCGIProcessed:(unsigned int)arg1;
+- (void)StartSyncOnAuthOK;
+- (void)StartInitNoSyncBuffer;
+- (void)StartInit;
+- (void)CancelInit;
+- (BOOL)IsDoingInit;
+- (BOOL)IsNeedInit;
+- (BOOL)IsFirstSync;
+- (void)UnregisterKeyExtension;
+- (void)RegisterKeyExtension;
+- (void)onServiceClearData;
+- (void)onServiceInit;
+- (void)dealloc;
+- (id)init;
+@end

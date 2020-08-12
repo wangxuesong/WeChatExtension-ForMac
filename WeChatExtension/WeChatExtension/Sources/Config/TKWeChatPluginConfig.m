@@ -9,6 +9,7 @@
 #import "TKWeChatPluginConfig.h"
 #import "TKRemoteControlModel.h"
 #import "YMAutoReplyModel.h"
+#import "VAutoForwardingModel.h"
 #import "TKIgnoreSessonModel.h"
 #import "WeChatPlugin.h"
 #import "YMIMContactsManager.h"
@@ -35,6 +36,8 @@ static NSString * const kTKWeChatRemotePlistPath = @"https://raw.githubuserconte
 @dynamic preventAsyncRevokeSignal;
 @dynamic preventAsyncRevokeChatRoom;
 @dynamic autoReplyEnable;
+@dynamic autoForwardingEnable;
+@dynamic autoForwardingAllFriend;
 @dynamic autoAuthEnable;
 @dynamic launchFromNew;
 @dynamic quitMonitorEnable;
@@ -47,10 +50,10 @@ static NSString * const kTKWeChatRemotePlistPath = @"https://raw.githubuserconte
 @dynamic systemBrowserEnable;
 @dynamic currentUserName;
 @dynamic isAllowMoreOpenBaby;
+@dynamic fuzzyMode;
 @dynamic darkMode;
 @dynamic blackMode;
 @dynamic pinkMode;
-@dynamic groupMultiColorMode;
 @dynamic isThemeLoaded;
 
 + (instancetype)sharedConfig
@@ -101,6 +104,23 @@ static NSString * const kTKWeChatRemotePlistPath = @"https://raw.githubuserconte
         [needSaveModels addObject:model.dictionary];
     }];
     [needSaveModels writeToFile:self.autoReplyPlistFilePath atomically:YES];
+}
+
+#pragma mark - 自动转发
+- (NSArray *)VAutoForwardingModel
+{
+    NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"AutoForwarding.data"];
+    return [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
+}
+
+- (void)saveAutoForwardingModel:(VAutoForwardingModel *)model
+{
+    if (!model) {
+        return;
+    }
+    NSString *temp = NSTemporaryDirectory();
+    NSString *filePath = [temp stringByAppendingPathComponent:@"AutoForwarding.data"];
+    [NSKeyedArchiver archiveRootObject:model toFile:filePath];
 }
 
 #pragma mark - 远程控制
@@ -341,55 +361,55 @@ static NSString * const kTKWeChatRemotePlistPath = @"https://raw.githubuserconte
 }
 
 - (BOOL)usingTheme {
-    return false; //self.darkMode || self.blackMode || self.pinkMode;
+    return false; //self.fuzzyMode || self.darkMode || self.blackMode || self.pinkMode;
 }
 
 - (BOOL)usingDarkTheme {
-    return false; //self.darkMode || self.blackMode;
+    return false; //self.fuzzyMode || self.darkMode || self.blackMode;
 }
 
 - (NSColor *)mainTextColor {
     if (![self usingTheme]) {
         return kDefaultTextColor;
     }
-    return self.darkMode ? kDarkModeTextColor : (self.blackMode ? kBlackModeTextColor : kPinkModeTextColor);
+    return self.fuzzyMode ? [NSColor whiteColor] : (self.darkMode ? kDarkModeTextColor : (self.blackMode ? kBlackModeTextColor : kPinkModeTextColor));
 }
 
 - (NSColor *)mainBackgroundColor {
     if (![self usingTheme]) {
         return NSColor.clearColor;
     }
-    return self.darkMode ? kDarkBacgroundColor : (self.blackMode ? kBlackBackgroundColor : kPinkBacgroundColor);
+    return self.fuzzyMode ? kFuzzyBacgroundColor : (self.darkMode ? kDarkBacgroundColor : (self.blackMode ? kBlackBackgroundColor : kPinkBacgroundColor));
 }
 
 - (NSColor *)mainIgnoredTextColor {
     if (![self usingTheme]) {
         return kDefaultIgnoredTextColor;
     }
-    return self.darkMode ? kDarkModeIgnoredTextColor : (self.blackMode ? kBlackModeIgnoredTextColor : kPinkModeIgnoredTextColor);
+    return self.fuzzyMode ? kDarkModeIgnoredTextColor : (self.darkMode ? kDarkModeIgnoredTextColor : (self.blackMode ? kBlackModeIgnoredTextColor : kPinkModeIgnoredTextColor));
 }
 
 - (NSColor *)mainIgnoredBackgroundColor {
     if (![self usingTheme]) {
         return kDefaultIgnoredBackgroundColor;
     }
-    return self.darkMode ? kDarkModeIgnoredBackgroundColor : (self.blackMode ? kBlackModeIgnoredBackgroundColor : kPinkModeIgnoredBackgroundColor);
+    return self.fuzzyMode ? kDarkModeIgnoredBackgroundColor : (self.darkMode ? kDarkModeIgnoredBackgroundColor : (self.blackMode ? kBlackModeIgnoredBackgroundColor : kPinkModeIgnoredBackgroundColor));
 }
 
 - (NSColor *)mainSeperatorColor {
-    return self.darkMode ? kRGBColor(147, 148, 248, 0.2) : (self.blackMode ? kRGBColor(128,128,128, 0.5) : kRGBColor(147, 148, 248, 0.2));
+    return self.fuzzyMode ? kRGBColor(147, 148, 248, 0.2) : (self.darkMode ? kRGBColor(147, 148, 248, 0.2) : (self.blackMode ? kRGBColor(128,128,128, 0.5) : kRGBColor(147, 148, 248, 0.2)));
 }
 
 - (NSColor *)mainScrollerColor {
-    return self.darkMode ? kRGBColor(33, 48, 64, 1.0) : (self.blackMode ? kRGBColor(128,128,128, 0.5) : NSColor.clearColor);
+    return self.fuzzyMode ? kRGBColor(33, 48, 64, 1.0) : (self.darkMode ? kRGBColor(33, 48, 64, 1.0) : (self.blackMode ? kRGBColor(128,128,128, 0.5) : NSColor.clearColor));
 }
 
 - (NSColor *)mainDividerColor {
-    return self.darkMode ? kRGBColor(71, 69, 112, 0.5) : (self.blackMode ? kRGBColor(128,128,128, 0.7) : kRGBColor(71, 69, 112, 0.5));
+    return self.fuzzyMode ? kRGBColor(71, 69, 112, 0.5) : (self.darkMode ? kRGBColor(71, 69, 112, 0.5) : (self.blackMode ? kRGBColor(128,128,128, 0.7) : kRGBColor(71, 69, 112, 0.5)));
 }
 
 - (NSColor *)mainChatCellBackgroundColor {
-    return self.darkMode ? kRGBColor(33, 48, 64, 1.0) : (self.blackMode ? kRGBColor(38, 38, 38, 1.0) : nil);
+    return self.fuzzyMode ? kRGBColor(33, 48, 64, 0.3) : (self.darkMode ? kRGBColor(33, 48, 64, 1.0) : (self.blackMode ? kRGBColor(38, 38, 38, 1.0) : nil));
 }
 
 @end
